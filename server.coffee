@@ -16,6 +16,7 @@ class DummyClient
         main.server.handleSomen @, data
       , main.width / (main.speed * main.fps) * 1000
 
+
 class Server
   constructor: ->
     @output = null
@@ -78,14 +79,20 @@ class Server
       socket.on 'somen', (data) =>
         @handleSomen socket, data
 
+      socket.on 'somen/add', (data) =>
+        @handleSomenAdd socket, data
+      socket.on 'somen/remove', (data) =>
+        @handleSomenRemove socket, data
+      socket.on 'hashi/add', (data) =>
+        @handleHashiAdd socket, data
+
   handleSomen: (socket, data) ->
     if not data.index?
       if socket == @input
         data.index = -1
+        @somenCounter += 1
       else
         data.index = socket.index
-      data.id = @somenCounter
-      @somenCounter += 1
 
     data.index += 1
 
@@ -97,6 +104,19 @@ class Server
         @monitor.emit 'somen', data
     else if @output?
       @output.emit 'somen', data
+      @somenCounter -= 1
+
+  handleSomenAdd: (socket, data) ->
+    @somenCounter += 1
+    if @monitor?
+      @monitor.emit 'somen/add', data
+
+  handleSomenRemove: (socket, data) ->
+    if @monitor?
+      @monitor.emit 'somen/remove', data
+  handleHashiAdd: (socket, data) ->
+    if @monitor?
+      @monitor.emit 'hashi/add', data
 
 
 main.server = new Server()
