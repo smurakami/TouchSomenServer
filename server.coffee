@@ -72,7 +72,7 @@ class Server
           index = socket.index
         else
           index = 0
-        @clients[index] = new DummyClient()
+        @clients[index] = new DummyClient(index)
         console.log "clients: #{@clients.length}"
 
       # クライアントからの受信を受ける (socket.on)
